@@ -51,6 +51,9 @@ function enablePinchZoom(pdfViewer) {
     viewer.style.transform = `none`;
     viewer.style.transformOrigin = `unset`;
 
+    const newPinchScale =
+      PDFViewerApplication.pdfViewer.currentScale * pinchScale;
+
     if (newPinchScale <= pinchMaxScale && newPinchScale >= pinchMinScale) {
       PDFViewerApplication.pdfViewer.currentScale = newPinchScale;
       const rect = container.getBoundingClientRect();
