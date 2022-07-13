@@ -58,6 +58,7 @@ function enablePinchZoom(pdfViewer) {
     container.scrollLeft += dx * (pinchScale - 1);
     container.scrollTop += dy * (pinchScale - 1);
     reset();
+    //최종인가염!!
   });
 }
 document.addEventListener("DOMContentLoaded", () => {
