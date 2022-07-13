@@ -41,6 +41,9 @@ function enablePinchZoom(pdfViewer) {
     viewer.style.transform = `scale(${pinchScale})`;
     viewer.style.transformOrigin = `${originX}px ${originY}px`;
   });
+
+  const pinchMaxScale = 5;
+  const pinchMinScale = 0.3;
   document.addEventListener("touchend", (e) => {
     if (initialPinchDistance <= 0) {
       return;
@@ -48,12 +51,20 @@ function enablePinchZoom(pdfViewer) {
     viewer.style.transform = `none`;
     viewer.style.transformOrigin = `unset`;
 
-    PDFViewerApplication.pdfViewer.currentScale *= pinchScale;
-    const rect = container.getBoundingClientRect();
-    const dx = startX - rect.left;
-    const dy = startY - rect.top + 32;
-    container.scrollLeft += dx * (pinchScale - 1);
-    container.scrollTop += dy * (pinchScale - 1);
+    if (newPinchScale <= pinchMaxScale && newPinchScale >= pinchMinScale) {
+      PDFViewerApplication.pdfViewer.currentScale = newPinchScale;
+      const rect = container.getBoundingClientRect();
+      const dx = startX - rect.left;
+      const dy = startY - rect.top;
+      container.scrollLeft += dx * (pinchScale - 1);
+      container.scrollTop += dy * (pinchScale - 1);
+    } else {
+      if (newPinchScale >= pinchMaxScale) {
+        PDFViewerApplication.pdfViewer.currentScale = pinchMaxScale;
+      } else {
+        PDFViewerApplication.pdfViewer.currentScale = pinchMinScale;
+      }
+    }
     reset();
     //최종인가염!!
   });
