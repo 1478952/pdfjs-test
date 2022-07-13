@@ -24,6 +24,8 @@ function enablePinchZoom(pdfViewer) {
       initialPinchDistance = 0;
     }
   });
+  let lastPinchDistance = 0;
+  const pinchStepLength = 50;
   document.addEventListener(
     "touchmove",
     (e) => {
@@ -37,6 +39,10 @@ function enablePinchZoom(pdfViewer) {
         e.touches[1].pageX - e.touches[0].pageX,
         e.touches[1].pageY - e.touches[0].pageY
       );
+      if (Math.abs(pinchDistance - lastPinchDistance) < pinchStepLength) {
+        return;
+      }
+      lastPinchDistance = pinchDistance;
       const originX = startX + container.scrollLeft;
       const originY = startY + container.scrollTop;
       pinchScale = pinchDistance / initialPinchDistance;
@@ -45,18 +51,24 @@ function enablePinchZoom(pdfViewer) {
     },
     { passive: false }
   );
-  document.addEventListener("touchend", (e) => {
+  const pinchMaxScale = 5;
+
+  container.addEventListener("touchend", (e) => {
     if (initialPinchDistance <= 0) {
       return;
     }
     viewer.style.transform = `none`;
     viewer.style.transformOrigin = `unset`;
-    PDFViewerApplication.pdfViewer.currentScale *= pinchScale;
-    const rect = container.getBoundingClientRect();
-    const dx = startX - rect.left;
-    const dy = startY - rect.top;
-    container.scrollLeft += dx * (pinchScale - 1);
-    container.scrollTop += dy * (pinchScale - 1);
+    const newPinchScale =
+      PDFViewerApplication.pdfViewer.currentScale * pinchScale;
+    if (newPinchScale <= pinchMaxScale) {
+      PDFViewerApplication.pdfViewer.currentScale = newPinchScale;
+      const rect = container.getBoundingClientRect();
+      const dx = startX - rect.left;
+      const dy = startY - rect.top;
+      container.scrollLeft += dx * (pinchScale - 1);
+      container.scrollTop += dy * (pinchScale - 1);
+    }
     reset();
   });
 }
