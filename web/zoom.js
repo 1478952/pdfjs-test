@@ -54,7 +54,7 @@ function enablePinchZoom(pdfViewer) {
     PDFViewerApplication.pdfViewer.currentScale *= pinchScale;
     const rect = container.getBoundingClientRect();
     const dx = startX - rect.left;
-    const dy = startY - rect.top;
+    const dy = startY - rect.top + 32;
     container.scrollLeft += dx * (pinchScale - 1);
     container.scrollTop += dy * (pinchScale - 1);
     reset();
